@@ -194,6 +194,27 @@ if config["enable"].get("download_osm_data", True):
             "scripts/download_osm_data.py"
 
 
+rule extract_osm_rooftop_data:
+    params:
+        countries=config["countries"],
+    output:
+        buildings_csv="resources/" + RDIR + "osm/buildings/all_raw_buildings.csv",
+        buildings_geojson="resources/"
+        + RDIR
+        + "osm/buildings/all_raw_buildings.geojson",
+        solar_csv="resources/" + RDIR + "osm/solar/all_raw_solar.csv",
+        solar_geojson="resources/" + RDIR + "osm/solar/all_raw_solar.geojson",
+    log:
+        "logs/" + RDIR + "extract_osm_rooftop_data.log",
+    benchmark:
+        "benchmarks/" + RDIR + "extract_osm_rooftop_data"
+    threads: 1
+    resources:
+        mem_mb=6000,
+    script:
+        "scripts/extract_osm_rooftop_data.py"
+
+
 rule clean_osm_data:
     params:
         crs=config["crs"],
@@ -654,6 +675,42 @@ rule build_powerplants:
         mem_mb=500,
     script:
         "scripts/build_powerplants.py"
+
+
+rule retrieve_rooftop_pv:
+    input:
+        country_shapes="resources/shapes/country_shapes.geojson",
+    output:
+        data_dir=directory("data/rooftop_pv/global_pv_2022"),
+        selected_tiles="resources/" + RDIR + "rooftop_pv/selected_tiles.geojson",
+    log:
+        "logs/" + RDIR + "retrieve_rooftop_pv.log",
+    benchmark:
+        "benchmarks/" + RDIR + "retrieve_rooftop_pv"
+    threads: 1
+    resources:
+        mem_mb=1000,
+    script:
+        "scripts/retrieve_rooftop_pv.py"
+
+
+rule classify_rooftop_pv:
+    input:
+        selected_tiles="resources/" + RDIR + "rooftop_pv/selected_tiles.geojson",
+        buildings="resources/" + RDIR + "osm/buildings/all_raw_buildings.geojson",
+        solar_plants="resources/" + RDIR + "osm/solar/all_raw_solar.geojson",
+        tile_dir="data/rooftop_pv/global_pv_2022/2022",
+    output:
+        classified_pv="resources/" + RDIR + "rooftop_pv/classified_pv_2022.gpkg",
+    log:
+        "logs/" + RDIR + "classify_rooftop_pv.log",
+    benchmark:
+        "benchmarks/" + RDIR + "classify_rooftop_pv"
+    threads: 1
+    resources:
+        mem_mb=8000,
+    script:
+        "scripts/classify_rooftop_pv.py"
 
 
 rule add_electricity:
