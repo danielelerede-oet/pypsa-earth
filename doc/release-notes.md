@@ -16,6 +16,8 @@ This part of documentation collects descriptive release notes to capture the mai
 
 **Minor Changes and bug-fixing**
 
+* Fix sector emission accounting for non-uniform snapshot weights [PR #2027](https://github.com/pypsa-meets-earth/pypsa-earth/pull/2027)
+
 * Fix fallback to closest available CO2 emission year [PR #2018](https://github.com/pypsa-meets-earth/pypsa-earth/pull/2018)
 
 # PyPSA-Earth 0.9.0
